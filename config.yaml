@@ -1,0 +1,14 @@
+api:
+  cfbd_api_key: '*'
+paths:
+  teams_output: "data/teams_raw.json"
+  recruit_rankings_output: "data/recruit_rankings.json"
+  returning_ppa_output: "data/returning_ppa.json"
+  sp_ratings_output: "data/sp_ratings.json"
+  game_results_output: "data/game_results_raw.json"
+  advanced_stats_output: "data/advanced_game_stats_raw.json"
+  betting_lines_output: "data/betting_lines.json"
+settings:
+  start_year: 2004
+  end_year: 2024
+  batch_size: 3
