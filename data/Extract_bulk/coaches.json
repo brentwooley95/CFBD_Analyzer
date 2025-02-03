@@ -1,0 +1,23 @@
+[
+  {
+    "first_name": "Steve", 
+    "last_name": "Addazio", 
+    "hire_date": null, 
+    "seasons": [
+                {
+                  "school": "Boston College", 
+                  "year": "2014", 
+                  "games": 13, 
+                  "wins": 7, 
+                  "losses": 6, 
+                  "ties": 0, 
+                  "preseason_rank": null, 
+                  "postseason_rank": null, 
+                  "srs": 6.2, 
+                  "sp_overall": 4.9, 
+                  "sp_offense": 28.7, 
+                  "sp_defense": 23.7
+                }
+              ]
+  }
+]
