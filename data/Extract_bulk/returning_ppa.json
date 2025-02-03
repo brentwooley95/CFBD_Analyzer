@@ -1,0 +1,19 @@
+[
+  {
+    "season": 2014, 
+    "team": "Air Force", 
+    "conference": "Mountain West", 
+    "total_ppa": 96.7, 
+    "total_passing_ppa": 7.3, 
+    "total_receiving_ppa": 60.0, 
+    "total_rushing_ppa": 29.4, 
+    "percent_ppa": 0.608, 
+    "percent_passing_ppa": 0.417, 
+    "percent_receiving_ppa": 0.78, 
+    "percent_rushing_ppa": 0.453, 
+    "usage": 0.684, 
+    "passing_usage": 0.751, 
+    "receiving_usage": 0.774, 
+    "rushing_usage": 0.652
+  }
+]
