@@ -13,37 +13,13 @@ Features
 **Data Normalization**: Cleans and formats string and numerical data to fit into a normalized relational database
  
 Stucture
-CFdatapipeline/
-│── data/                   # Raw & transformed data storage
-│   ├── Extract_bulk/       # Raw JSON files
-│   ├── Transformed_bulk/   # Processed CSV files
-│
-│── src/                    # Core scripts
-│   ├── extract.py          # Handles data extraction
-│   ├── transform.py        # Handles data transformation
-│   ├── load.py             # (Under construction) Handles data loading
-│   ├── utils/              # Utility functions
-│   │   ├── __init__.py     # Contains common functions (load_config, clean_string, clean_float, etc.)
-│
-│── config.yaml             # Configuration file for API key, file paths & processing settings
-│── main.py                 # CLI interface for running ETL tasks
+![image](https://github.com/user-attachments/assets/8b498cd8-4c7f-464e-8e6d-f556b62a2d93)
 
 Usage
 1. Clone repo
 2. Create venv
 3. install dependencies
-4. Conifiguration
-Modify config.yaml to define file paths and processing settings
-paths:
-  fbs_teams_raw: "data/Extract_bulk/teams_raw.json"
-  fbs_teams_tran: "data/Transformed_bulk/teams.csv"
-  recruit_rankings_raw: "data/Extract_bulk/recruit_rankings.json"
-  recruit_rankings_tran: "data/Transformed_bulk/recruit_rankings.csv"
-
-settings:
-  start_year: 2010
-  end_year: 2024
-
+4. Conifiguration: Modify config.yaml to define file paths and processing settings
 5. Run main.py
 
    CLI argument parser: python main.py run [task] [extract, transform, or both] --years[start_year]-[end_year]
