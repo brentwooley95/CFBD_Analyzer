@@ -3,7 +3,7 @@ import cfbd
 import json
 import yaml
 import time
-import gc
+import flatdict
 import os
 
 
@@ -21,27 +21,34 @@ settings = config["settings"]
 config_api = cfbd.Configuration()
 config_api.api_key['Authorization'] = CFBD_API_KEY
 config_api.api_key_prefix['Authorization'] = 'Bearer'
+
+# API Endpoints:
 stat_api = cfbd.StatsApi(cfbd.ApiClient(config_api))
 team_api = cfbd.TeamsApi(cfbd.ApiClient(config_api))
 game_api = cfbd.GamesApi(cfbd.ApiClient(config_api))
 recruit_api = cfbd.RecruitingApi(cfbd.ApiClient(config_api))
 rating_api = cfbd.RatingsApi(cfbd.ApiClient(config_api))
 returning_api = cfbd.PlayersApi(cfbd.ApiClient(config_api))
-betting_api = cfbd.BettingApi(cfbd.ApiClient(config_api))
+coaches_api = cfbd.CoachesApi(cfbd.ApiClient(config_api))
+
 
 def extract_fbs_teams(teams_output, year=2024):
     """fetch current FBS team. TODO: get current year"""
-    raw_teams = team_api.get_fbs_teams(year=year)
 
-    raw_teams_dict = [team.to_dict() for team in raw_teams]
-
-    with open(teams_output, 'w') as json_file:
-        json.dump(raw_teams_dict, json_file)
-    print(f"Raw teams data saved to {teams_output}")
+    try:
+        print(f"Fetching FBS teams for year: {year}")
+        raw_teams = team_api.get_fbs_teams(year=year)
+        raw_teams_dict = [team.to_dict() for team in raw_teams]
+        with open(teams_output, 'w') as json_file:
+            json.dump(raw_teams_dict, json_file)
+        print(f"Raw teams data saved to {teams_output}")
+    except Exception as e:
+        print(f"Error fetching FBS teams for year {year}: {e}")
 
 
 def extract_recruit_rankings(recruiting_output, start_year, end_year):
     """extract recruiting rankings over a range of seasons"""
+
     all_rankings = []
 
     for year in range(start_year, end_year + 1):
@@ -61,6 +68,7 @@ def extract_recruit_rankings(recruiting_output, start_year, end_year):
 
 def extract_returning_ppa(returning_ppa_output, start_year, end_year):
     """Extract returning production PPA data over a range of seasons."""
+
     all_returning_ppa = []
 
     for year in range(start_year, end_year + 1):
@@ -80,6 +88,7 @@ def extract_returning_ppa(returning_ppa_output, start_year, end_year):
 
 def extract_sp_ratings(sp_output, start_year, end_year):
     """Extract SP+ ratings over a range of seasons."""
+
     all_sp_ratings = []
 
     for year in range(start_year, end_year + 1):
@@ -97,129 +106,78 @@ def extract_sp_ratings(sp_output, start_year, end_year):
     print(f"SP+ ratings saved to {sp_output}")
 
 
-def extract_betting_lines(bl_output, start_year, end_year, valid_teams):
+def extract_coach_ratings(coach_output, start_year, end_year):
     """
     fetch certain betting line data by game for FBS teams
     """
-    with open(valid_teams, 'r') as file:
-        raw_teams_dict = json.load(file)
-        teams = {team["school"] for team in raw_teams_dict}  # Extract team names
 
-    with open(bl_output, 'w') as json_file:
-        json_file.write('[')  # Start of JSON array
-        all_games = []
+    all_coach_ratings = []
 
-        for year in range(start_year, end_year + 1):
-            print(f"Fetching betting line data for year: {year}")
-            try:
-                game_bl = betting_api.get_lines(year=year)
+    for year in range(start_year, end_year + 1):
+        try:
+            print(f"Fetching coach ratings for year: {year}")
+            raw_coach_ratings = coaches_api.get_coaches(year=year)
+            coach_ratings_dict = [rating.to_dict() for rating in raw_coach_ratings]
+            all_coach_ratings.extend(coach_ratings_dict)
+        except Exception as e:
+            print(f"Error fetching coach ratings for year {year}: {e}")
 
-                for game in game_bl:
-                    game_bl_dict = game.to_dict()
-                    if game_bl_dict.get("home_team") in teams or game_bl_dict.get("away_team") in teams:
-                        lines = game_bl_dict.get("lines", [])
-
-                        # Add all providers' lines
-                        for line in lines:
-                            all_games.append({
-                                "Game_id": game_bl_dict.get("id"),
-                                "Season": game_bl_dict.get("season"),
-                                "Week": game_bl_dict.get("week"),
-                                "Type": game_bl_dict.get("season_type"),
-                                "Home_team": game_bl_dict.get("home_team"),
-                                "Away_team": game_bl_dict.get("away_team"),
-                                "Provider": line.get("provider"),
-                                "Formatted_spread": line.get("formatted_spread"),
-                                "Spread": line.get("spread"),
-                                "Opening_spread": line.get("spread_open"),
-                                "Over_under": line.get("over_under")
-                            })
-            except Exception as e:
-                print(f"Error fetching betting line data for year {year}: {e}")
-
-        # Write all filtered games to the JSON file
-        json.dump(all_games, json_file, indent=4)
-        json_file.write(']')  # End of JSON array
-
-    print(f"Filtered betting line data saved to {bl_output}")
+    with open(coach_output, 'w') as json_file:
+        json.dump(all_coach_ratings, json_file)
+    print(f"Coach ratings saved to {coach_output}")
 
 
-def extract_game_results(output_file, start_year, end_year, valid_teams, batch_size=3):
+def extract_game_results(games_output, start_year, end_year, batch_size=3):
     """Fetch data from API in batches writing json game data to output, logs fetch time for each pull"""
-    with open(valid_teams, 'r') as file:
-        raw_teams_dict = json.load(file)
-        teams = {team["id"] for team in raw_teams_dict}  # Extract team IDs
-
     # Split the years into batches
     years = list(range(start_year, end_year + 1))
     year_batches = [years[i:i + batch_size] for i in range(0, len(years), batch_size)]
 
-    # Open the output file and write the opening JSON array bracket
-    with open(output_file, 'w') as json_file:
-        json_file.write('[')  # Start of JSON array
+    games_data = []
 
-        for i, batch in enumerate(year_batches):
-            start_time = time.time()
-            try:
-                print(f"Fetching game results for batch: {batch}")
-                batch_data = []
-                for year in batch:
-                    # Fetch results for each year in the batch
-                    year_data = extract_game_results_helper(year, teams)
-                    batch_data.extend(year_data)
+    for batch in year_batches:
+        start_time = time.time()
+        try:
+            print(f"Fetching games & results data for batch: {batch}")
+            year_data = extract_game_results_helper(batch)  # Get data for the batch
+            fetch_time = time.time() - start_time
+            print(f"Batch {batch} fetched in {fetch_time:.2f} seconds")
 
-                # Write batch data to file
-                if batch_data:
-                    json.dump(batch_data, json_file)
+            if year_data:
+                games_data.extend(year_data)  # Append batch data to the collection
+            else:
+                print(f"No data found for batch {batch}")
 
-                    # Add a comma if this isn't the last batch
-                    if i < len(year_batches) - 1:
-                        json_file.write(',')
+        except Exception as e:
+            print(f"Error processing batch {batch}: {e}")
 
-                fetch_time = time.time() - start_time
-                print(f"Batch {batch} fetched in {fetch_time:.2f} seconds")
+    # Write all collected data to the output file as a JSON array
+    try:
+        with open(games_output, 'w') as json_file:
+            json.dump(games_data, json_file, indent=4)
+        print(f"Filtered games & results data saved to {games_output}")
+    except Exception as e:
+        print(f"Error writing to {games_output}: {e}")
 
-            except Exception as e:
-                print(f"Error processing batch {batch}: {e}")
 
-        json_file.write(']')  # End of JSON array
-
-    print(f"Filtered game results data saved to {output_file}")
-
-# test
-def extract_game_results_helper(year, teams):
+def extract_game_results_helper(year_batch):
     """call API and build a list of json game data"""
     try:
-        games = game_api.get_games(year=year, season_type="both")
-        filtered_games = []
-        for game in games:
-            game_dict = game.to_dict()
-            if game_dict.get("home_id") in teams or game_dict.get("away_id") in teams:
-                filtered_games.append({
-                    "Game_id": game_dict.get("id"),  # Replace with correct field for Game ID
-                    "Season": game_dict.get("season"),
-                    "Week": game_dict.get("week"),
-                    "Type": game_dict.get("season_type"),
-                    "Neutral": game_dict.get("neutral_site"),
-                    "Home_id": game_dict.get("home_id"),
-                    "Home_team": game_dict.get("home_team"),
-                    "Home_points": game_dict.get("home_points"),
-                    "Home_pg_elo": game_dict.get("home_pregame_elo"),
-                    "Away_id": game_dict.get("away_id"),
-                    "Away_team": game_dict.get("away_team"),
-                    "Away_points": game_dict.get("away_points"),
-                    "Away_pg_elo": game_dict.get("away_pregame_elo"),
-                    "Excite": game_dict.get("excitement_index")
+        flat_games_data = []
+        for year in year_batch:
+            games = game_api.get_games(year=year, season_type="both")
+            for game in games:
+                # flatten game data
+                flat_game = dict(flatdict.FlatDict(game.to_dict(), delimiter='.'))
+                flat_games_data.append(flat_game)
 
-                })
-
-        return filtered_games
+        return flat_games_data
     except Exception as e:
-        print(f"Error fetching games & results data for year {year}: {e}")
+        print(f"Error fetching games & results data for year {year_batch}: {e}")
         return [] # error -> return empty list
 
 
-def extract_advanced_stats(output_file, start_year, end_year, valid_teams, batch_size=3):
+def extract_advanced_stats(ags_output, start_year, end_year, batch_size=3):
     """
     Fetch ags data from API in batches writing json game data to output,
     logs fetch time for each pull. This API call is seemingly throttled or reduced? on subsequent calls.
@@ -229,70 +187,56 @@ def extract_advanced_stats(output_file, start_year, end_year, valid_teams, batch
     Calls to this table require a year or team filter.
     Year filter allows for bigger pulls ( ~3300 rows vs ~500)
     """
-    # Load valid FBS teams
-    with open(valid_teams, 'r') as file:
-        raw_teams_dict = json.load(file)
-        teams = {team["school"] for team in raw_teams_dict}  # Extract team names
-
+    # Split the years into batches
     years = list(range(start_year, end_year + 1))
     year_batches = [years[i:i + batch_size] for i in range(0, len(years), batch_size)]
 
-    # Open the output file and write the opening JSON array bracket
-    with open(output_file, 'w') as json_file:
-        json_file.write('[')  # Start of JSON array
+    ags_data = []  # Collect all data before writing to the file
 
-        # processing years sequentially & incrementally
-        for i, batch in enumerate(year_batches):
-            start_time = time.time()
-            try:
-                print(f"Fetching AGS data for batch: {batch}")
-                year_data = extract_adv_stats_helper(batch, teams)  # Call helper for a single year
-                fetch_time = time.time() - start_time
-                print(f"batch {batch} fecthed in {fetch_time:.2f} seconds")
+    for batch in year_batches:
+        start_time = time.time()
+        try:
+            print(f"Fetching AGS data for batch: {batch}")
+            year_data = extract_adv_stats_helper(batch)  # Get data for the batch
+            fetch_time = time.time() - start_time
+            print(f"Batch {batch} fetched in {fetch_time:.2f} seconds")
 
-                if year_data:
-                    json.dump(year_data, json_file)  # Save all data at once
-                    del year_data
-                    gc.collect() # release mem & trigger garbage collection
-                    time.sleep(10) # wait a couple second
-                    if i < len(year_batches):
-                        json_file.write(',')
-            except Exception as e:
-                print(f"Error prcoessing AGS for years {batch}: {e}")
-        json_file.write(']')
-    print(f"Filtered AGS data saved to {output_file}")
+            if year_data:
+                ags_data.extend(year_data)  # Append batch data to the collection
+            else:
+                print(f"No data found for batch {batch}")
+
+        except Exception as e:
+            print(f"Error processing batch {batch}: {e}")
+
+    # Write all collected data to the output file as a JSON array
+    try:
+        with open(ags_output, 'w') as json_file:
+            json.dump(ags_data, json_file, indent=4)
+        print(f"Filtered AGS data saved to {ags_output}")
+    except Exception as e:
+        print(f"Error writing to {ags_output}: {e}")
 
 
-def extract_adv_stats_helper(year_batch, teams):
+def extract_adv_stats_helper(year_batch):
     """call API and build a list of json game and stats data"""
     try:
-        flattened_ags = []
+        flat_ags_data = []
         for year in year_batch:
             start_api_time = time.time()
+            # API CALL: Exclude "garbage time" data, include both regular & postseason games
             ags = stat_api.get_advanced_team_game_stats(year=year, exclude_garbage_time=True, season_type="both")
             api_fetch_time = time.time() - start_api_time # api fetch time, it seems api calls are throttled
             print(f"API call for year {year} took {api_fetch_time:.2f} seconds") # logging time
             for game in ags:
-                game_dict = game.to_dict()
-                if game_dict.get("team") in teams and game_dict.get("opponent") in teams:
-                    flattened_game = {
-                        "Game_id": game_dict.get("game_id"),  # Replace with correct field for Game ID
-                        "Team_name": game_dict.get("team"),
-                        "Oppt_name": game_dict.get("opponent"),
-                        "Week": game_dict.get("week"),
-                        "Offense_ppa": game_dict.get("offense", {}).get("ppa"),  # Adjust field name if necessary
-                        "Offense_success_rate": game_dict.get("offense", {}).get("success_rate"),
-                        "Offense_explosiveness": game_dict.get("offense", {}).get("explosiveness"),
-                        "Defense_ppa": game_dict.get("defense", {}).get("ppa"),
-                        "Defense_success_rate": game_dict.get("defense", {}).get("success_rate"),
-                        "Defense_explosiveness": game_dict.get("defense", {}).get("explosiveness"),
-                    }
-                    flattened_ags.append(flattened_game)
+                # Flatten all data dynamically
+                flat_game = dict(flatdict.FlatDict(game.to_dict(), delimiter='.'))
+                flat_ags_data.append(flat_game)
 
-        return flattened_ags
+        return flat_ags_data
     except Exception as e:
         print(f"Error fetching AGS data for year {year_batch}: {e}")
-        return [] # error -> returnempty list
+        return []  # error -> return empty list
 
 
 def combine_json_files(input_folder, output_file):
@@ -326,37 +270,4 @@ def combine_json_files(input_folder, output_file):
         json.dump(all_data, output_json, indent=4)
 
     print(f"Combined JSON saved to {output_file}")
-
-
-def main():
-    # Use paths from the config file
-    teams_output = paths["teams_output"]
-    recruit_rankings_output = paths["recruit_rankings_output"]
-    returning_ppa_output = paths["returning_ppa_output"]
-    sp_ratings_output = paths["sp_ratings_output"]
-    game_results_output = paths["game_results_output"]
-    advanced_stats_output = paths["advanced_stats_output"]
-    betting_lines_output = paths["betting_lines_output"]
-
-    # Use settings from the config file
-    start_year = settings["start_year"]
-    end_year = settings["end_year"]
-
-    # Execute extraction tasks
-    #extract_recruit_rankings(recruit_rankings_output, start_year, end_year)
-    #extract_returning_ppa(returning_ppa_output, start_year, end_year)
-    #extract_sp_ratings(sp_ratings_output, start_year, end_year)
-    extract_betting_lines(betting_lines_output, start_year, end_year, teams_output)
-    #extract_game_results(game_results_output, start_year, end_year, teams_output)
-    #extract_advanced_stats(advanced_stats_output, start_year, end_year, teams_output)
-
-
-if __name__ == "__main__":
-    main()
-
-
-
-
-
-
 
