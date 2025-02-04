@@ -19,6 +19,6 @@ paths:
   advanced_stats_tran: "data/Transformed_bulk/advanced_game_stats_bulk.csv"
   coaches_tran: "data/Transformed_bulk/coaches.csv"
 settings:
-  start_year: 2004
+  start_year: 2014
   end_year: 2024
   batch_size: 3
