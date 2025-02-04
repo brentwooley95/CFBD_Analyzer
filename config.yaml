@@ -1,13 +1,23 @@
 api:
+# api KEY, hidden
   cfbd_api_key: '*'
 paths:
-  teams_output: "data/teams_raw.json"
-  recruit_rankings_output: "data/recruit_rankings.json"
-  returning_ppa_output: "data/returning_ppa.json"
-  sp_ratings_output: "data/sp_ratings.json"
-  game_results_output: "data/game_results_raw.json"
-  advanced_stats_output: "data/advanced_game_stats_raw.json"
-  betting_lines_output: "data/betting_lines.json"
+  # raw data paths
+  fbs_teams_raw: "data/Extract_bulk/teams_raw.json"
+  recruit_rankings_raw: "data/Extract_bulk/recruit_rankings.json"
+  returning_ppa_raw: "data/Extract_bulk/returning_ppa.json"
+  sp_ratings_raw: "data/Extract_bulk/sp_ratings.json"
+  game_results_raw: "data/Extract_bulk/game_results_raw.json"
+  advanced_stats_raw: "data/Extract_bulk/advanced_game_stats_raw.json"
+  coaches_raw: "data/Extract_bulk/coaches.json"
+  # transformed data paths
+  fbs_teams_tran: "data/Transformed_bulk/teams.csv"
+  recruit_rankings_tran: "data/Transformed_bulk/recruit_rankings.csv"
+  returning_ppa_tran: "data/Transformed_bulk/returning_ppa.csv"
+  sp_ratings_tran: "data/Transformed_bulk/sp_ratings.csv"
+  game_results_tran: "data/Transformed_bulk/game_results_bulk.csv"
+  advanced_stats_tran: "data/Transformed_bulk/advanced_game_stats_bulk.csv"
+  coaches_tran: "data/Transformed_bulk/coaches.csv"
 settings:
   start_year: 2004
   end_year: 2024
