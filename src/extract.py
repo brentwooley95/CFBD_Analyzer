@@ -186,7 +186,7 @@ def extract_game_results(output_file, start_year, end_year, valid_teams, batch_s
 
     print(f"Filtered game results data saved to {output_file}")
 
-
+# test
 def extract_game_results_helper(year, teams):
     """call API and build a list of json game data"""
     try:
