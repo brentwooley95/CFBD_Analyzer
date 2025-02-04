@@ -1,43 +1,23 @@
 import json
 import pandas as pd
+from src.utils import clean_float, clean_string
 
 
-def clean_float(value):
+def load_fbs_team_mapping(fbs_teams_path):
+    """Loads the FBS teams dataset to create a mapping of Team_name to Team_id."""
+    fbs_teams_df = pd.read_csv(fbs_teams_path)
+    return fbs_teams_df.set_index("Team_name")["Team_id"].to_dict()
+
+
+def map_team_id(df, team_mapping, team_column):
     """
-    Cleans and formats a value:
-    - Removes leading single quotes (').
-    - Converts to float.
-    - Rounds to 4 decimal places.
+    Maps Team_name to Team_id using the provided mapping dictionary.
     """
-    try:
-        # Remove leading single quotes and convert to float
-        cleaned_value = float(str(value).lstrip("'"))
-        return round(cleaned_value, 4)
-    except (ValueError, TypeError):
-        # If conversion fails, return None or a default value (e.g., 0.0)
-        return None
-
-
-def clean_string(value):
-    """
-    Cleans and formats a string:
-    - Decodes Unicode escape sequences.
-    - Strips unwanted leading/trailing whitespace or special characters.
-    """
-
-    if not isinstance(value, str):
-        return None
-
-        # Step 1: Decode Unicode escape sequences (e.g., \u00e9 -> é)
-    try:
-        value = value.encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
-    except (UnicodeEncodeError, UnicodeDecodeError):
-        pass  # If decoding fails, leave the string as-is
-
-        # Step 2: Strip unwanted whitespace
-    cleaned_value = value.strip()
-
-    return cleaned_value
+    df["Team_id"] = df[team_column].map(team_mapping)
+    if "Opponent_name" in df.columns:
+        df["Opponent_id"] = df["Opponent_name"].map(team_mapping)
+    df.drop(columns=[team_column, "Opponent_name"], errors="ignore", inplace=True)
+    return df
 
 
 def transform_fbs_teams(teams_input, teams_output):
@@ -55,7 +35,7 @@ def transform_fbs_teams(teams_input, teams_output):
     for team_dict in teams_raw_data:
         teams_tran_data.append({
             "Team_id": team_dict.get("id"),
-            "Team_name": team_dict.get("school"),
+            "Team_name": clean_string(team_dict.get("school")),
             "Conference": team_dict.get("conference"),
             "Color": team_dict.get("color"),
             "Alt_color": team_dict.get("alt_color"),
@@ -65,11 +45,11 @@ def transform_fbs_teams(teams_input, teams_output):
     teams_df = pd.DataFrame(teams_tran_data)
     print(f"Transformed teams data contains {len(teams_df)} records.")
 
-    teams_df.to_csv(teams_output, index=False)
+    teams_df.to_csv(teams_output, index=False, encoding='utf-8-sig')
     print(f"Transformed teams data saved to {teams_output}")
 
 
-def transform_recruit_rankings(input_json, output_csv):
+def transform_recruit_rankings(input_json, output_csv, valid_teams, team_mapping):
     """
     Reads recruit rankings data, transforms it, and saves it to CSV.
     """
@@ -77,115 +57,184 @@ def transform_recruit_rankings(input_json, output_csv):
         raw_data = json.load(json_file)
     print(f"Loaded raw recruit rankings data from {input_json}")
 
-    transformed_data = []
+    # Load valid teams
+    with open(valid_teams, 'r') as file:
+        raw_teams_dict = json.load(file)
+        valid_team_set = {team["school"] for team in raw_teams_dict}
 
-    for record in raw_data:
-        transformed_data.append({
+    transformed_data = [
+        {
             "Team_name": clean_string(record.get("team")),
             "Season": record.get("year"),
             "Rank": record.get("rank"),
-            "Points": clean_float(record.get("points"))
-        })
+            "Points": clean_float(record.get("points")),
+        }
+        for record in raw_data
+        if record.get("team") in valid_team_set
+    ]
 
     recruit_df = pd.DataFrame(transformed_data)
     print(f"Transformed recruit rankings data contains {len(recruit_df)} records.")
-
+    recruit_df = map_team_id(recruit_df, team_mapping, "Team_name")
     recruit_df.to_csv(output_csv, index=False, encoding='utf-8-sig')
     print(f"Transformed recruit rankings data saved to {output_csv}")
 
 
-def transform_returning_ppa(input_json, output_csv):
+def transform_returning_ppa(input_json, output_csv, valid_teams, team_mapping):
     """
-    Reads returning production data, transforms it, and saves it to CSV.
+    Reads returning production data, selects and transforms certain fields, and saves it to CSV.
     """
     with open(input_json, 'r', encoding='utf-8') as json_file:
         raw_data = json.load(json_file)
     print(f"Loaded raw returning production data from {input_json}")
 
-    transformed_data = []
+    # Load valid teams
+    with open(valid_teams, 'r') as file:
+        raw_teams_dict = json.load(file)
+        valid_team_set = {team["school"] for team in raw_teams_dict}
 
-    for record in raw_data:
-        transformed_data.append({
+    transformed_data = [
+        {
             "Team_name": clean_string(record.get("team")),
             "Season": record.get("season"),
-            "Percent_ppa": clean_float(record.get("percent_ppa"))
-        })
+            "Percent_ppa": clean_float(record.get("percent_ppa")),
+            "Total_ppa": clean_float(record.get("total_ppa")),
+        }
+        for record in raw_data
+        if record.get("team") in valid_team_set
+    ]
 
     returning_ppa_df = pd.DataFrame(transformed_data)
     print(f"Transformed returning production data contains {len(returning_ppa_df)} records.")
-
+    returning_ppa_df = map_team_id(returning_ppa_df, team_mapping, "Team_name")
     returning_ppa_df.to_csv(output_csv, index=False, encoding='utf-8-sig')
     print(f"Transformed returning production data saved to {output_csv}")
 
 
-def transform_sp_ratings(input_json, output_csv):
+def transform_sp_ratings(input_json, output_csv, valid_teams, team_mapping):
     """
-    Reads SP+ ratings data, transforms it, and saves it to CSV.
+    Reads SP+ ratings data,  selects and transforms certain fields, and saves it to CSV.
     """
     with open(input_json, 'r', encoding='utf-8') as json_file:
         raw_data = json.load(json_file)
     print(f"Loaded raw SP+ ratings data from {input_json}")
 
-    transformed_data = []
+    # Load valid teams
+    with open(valid_teams, 'r') as file:
+        raw_teams_dict = json.load(file)
+        valid_team_set = {team["school"] for team in raw_teams_dict}
 
-    for record in raw_data:
-        transformed_data.append({
+    transformed_data = [
+        {
             "Team_name": clean_string(record.get("team")),
             "Season": record.get("year"),
-            "Rating": clean_float(record.get("rating")),
+            "SP_rating": clean_float(record.get("rating")),
             "Off_Rating": clean_float(record.get("offense", {}).get("rating")),
             "Def_Rating": clean_float(record.get("defense", {}).get("rating")),
-            "ST_Rating": clean_float(record.get("special_teams", {}).get("rating"))
-        })
+            "ST_Rating": clean_float(record.get("special_teams", {}).get("rating")),
+        }
+        for record in raw_data
+        if record.get("team") in valid_team_set
+    ]
 
     sp_ratings_df = pd.DataFrame(transformed_data)
     print(f"Transformed SP+ ratings data contains {len(sp_ratings_df)} records.")
-
+    sp_ratings_df = map_team_id(sp_ratings_df, team_mapping, "Team_name")
     sp_ratings_df.to_csv(output_csv, index=False, encoding='utf-8-sig')
     print(f"Transformed SP+ ratings data saved to {output_csv}")
 
 
-def transform_betting_lines(input_json, output_csv):
+def transform_coach_ratings(coach_input, coaches_output, valid_teams, team_mapping):
     """
     Reads betting line data, transforms it, and saves it to CSV.
     """
-    with open(input_json, 'r', encoding='utf-8') as json_file:
-        raw_data = json.load(json_file)
+    # Load raw data with error handling
+    try:
+        with open(coach_input, 'r', encoding='utf-8') as json_file:
+            coach_raw_data = json.load(json_file)
+    except json.JSONDecodeError as e:
+        print(f"Error loading JSON from {coach_input}: {e}")
+        return
+    print(f"Loaded raw data from {coach_input}")
 
-    flattened_data = [item for sublist in raw_data for item in sublist]
-    transformed_data = []
-    for record in flattened_data:
-        transformed_data.append({
-            "Game_id": record.get("Game_id"),
-            "Season": record.get("Season"),
-            "Week": record.get("Week"),
-            "Type": record.get("Type"),
-            "Home_team": clean_string(record.get("Home_team")),
-            "Away_team": clean_string(record.get("Away_team")),
-            "Provider": clean_string(record.get("Provider")),
-            "Formatted_spread": clean_string(record.get("Formatted_spread")),
-            "Spread": clean_float(record.get("Spread")),
-            "Opening_spread": clean_float(record.get("Opening_spread")),
-            "Over_under": clean_float(record.get("Over_under")),
-        })
+    # Load valid teams
+    with open(valid_teams, 'r') as file:
+        raw_teams_dict = json.load(file)
+        valid_team_set = {team["school"] for team in raw_teams_dict}
 
-    betting_lines_df = pd.DataFrame(transformed_data)
-    betting_lines_df.to_csv(output_csv, index=False, encoding='utf-8-sig')
-    print(f"Transformed betting line data saved to {output_csv}")
+    # Select and transform data
+    transformed_coach_data = []
+    for record in coach_raw_data:
+        seasons = record.get("seasons", [])  # Get the list of seasons (default to empty list)
+
+        for season in seasons:  # Iterate over each season entry
+            if season.get("school") in valid_team_set:  # Only include FBS teams
+                transformed_coach_data.append({
+                    "First_name": clean_string(record.get("first_name")),
+                    "Last_name": clean_string(record.get("last_name")),
+                    "Team_name": clean_string(season.get("school")),
+                    "Season": season.get("year"),
+                    "Games": season.get("games"),
+                    "Wins": season.get("wins"),
+                    "Losses": clean_float(season.get("losses")),
+                    "SP_rating": clean_float(season.get("sp_overall")),
+                    "Off_rating": clean_float(season.get("sp_offense")),
+                    "Def_rating": clean_float(season.get("sp_defense")),
+                })
+
+    # Convert to DataFrame
+    transformed_coach_df = pd.DataFrame(transformed_coach_data)
+    print(f"Filtered and transformed coach data contains {len(transformed_coach_df)} records.")
+    # print(transformed_df.head())
+    transformed_coach_df = map_team_id(transformed_coach_df, team_mapping, "Team_name")
+
+    # Handle unmapped teams
+    unmapped_teams = transformed_coach_df[transformed_coach_df["Team_id"].isnull()]
+    if not unmapped_teams.empty:
+        print("Warning: The following teams could not be mapped to Team_id:")
+        print(unmapped_teams[["Team_name"]].drop_duplicates())
+
+    # Save the transformed DataFrame to a CSV file
+    transformed_coach_df.to_csv(coaches_output, index=False, encoding='utf-8-sig')
+    print(f"Transformed data saved to {coaches_output}")
 
 
-def transform_game_results(games_input, games_output):
+def transform_game_results(games_input, games_output, valid_teams):
 
-    # Load the raw data
-    with open(games_input, 'r', encoding='utf-8') as json_file:
-        games_raw_data = json.load(json_file)
+    try:
+        # Load the raw data
+        with open(games_input, 'r', encoding='utf-8') as json_file:
+            games_raw_data = json.load(json_file)
+    except json.JSONDecodeError as e:
+        print(f"Error loading JSON from {games_input}: {e}")
+        return
     print(f"Loaded raw data from {games_output}")
 
-    transformed_games_data = []
+    # Load valid teams
+    with open(valid_teams, 'r') as file:
+        raw_teams_dict = json.load(file)
+        valid_team_set = {team["id"] for team in raw_teams_dict}
 
-    for game in games_raw_data:
-        for record in game:
-            transformed_games_data.append(record)
+    # Select and transform data
+    transformed_games_data = [
+        {
+            "Game_id": record.get("id"),
+            "Season": record.get("season"),
+            "Week": record.get("week"),
+            "Game_type": record.get("season_type"),
+            "Neutral": record.get("neutral_site"),
+            "Home_id": record.get("home_id"),
+            "Home_points": record.get("home_points"),
+            "Home_preg_elo": record.get("home_pregame_elo"),
+            "Home_postg_elo": record.get("home_postgame_elo"),
+            "Away_id": record.get("away_id"),
+            "Away_points": record.get("away_points"),
+            "Away_preg_elo": record.get("away_pregame_elo"),
+            "Away_postg_elo": record.get("away_postgame_elo")
+        }
+        for record in games_raw_data
+        if record.get("home_id") in valid_team_set and record.get("away_id") in valid_team_set # Only FBS teams
+    ]
 
     # Create a DataFrame from the transformed data
     transformed_games_df = pd.DataFrame(transformed_games_data)
@@ -196,52 +245,64 @@ def transform_game_results(games_input, games_output):
     print(f"Transformed  games data saved to {games_output}")
 
 
-def transform_advanced_stats(input_json, output_csv):
+def transform_advanced_stats(ags_input, ags_output, valid_teams, team_mapping):
     """
     Reads raw data from a JSON file, parses required fields into a structured format,
     and saves the transformed data to another CSV file.
     """
-    # Load the raw data
-    with open(input_json, 'r', encoding='utf-8') as json_file:
-        raw_data = json.load(json_file)  # raw_data is a list of dictionaries
-    print(f"Loaded raw data from {input_json}")
+    # Load raw data with error handling
+    try:
+        with open(ags_input, 'r', encoding='utf-8') as json_file:
+            ags_raw_data = json.load(json_file)
+    except json.JSONDecodeError as e:
+        print(f"Error loading JSON from {ags_input}: {e}")
+        return
+    print(f"Loaded raw data from {ags_input}")
 
-    transformed_data = []
+    # Check if raw_data is empty
+    if not ags_raw_data or not isinstance(ags_raw_data, list):
+        print(f"Error: Loaded JSON data from {ags_input} is empty or not in the expected format.")
+        return
 
-    for record in raw_data:  # Iterate directly over raw_data (no nested loop needed)
-        # Clean float fields
-        record["Offense_ppa"] = clean_float(record.get("Offense_ppa"))
-        record["Offense_success_rate"] = clean_float(record.get("Offense_success_rate"))
-        record["Offense_explosiveness"] = clean_float(record.get("Offense_explosiveness"))
-        record["Defense_ppa"] = clean_float(record.get("Defense_ppa"))
-        record["Defense_success_rate"] = clean_float(record.get("Defense_success_rate"))
-        record["Defense_explosiveness"] = clean_float(record.get("Defense_explosiveness"))
+    # Load valid teams
+    with open(valid_teams, 'r') as file:
+        raw_teams_dict = json.load(file)
+        valid_team_set = {team["school"] for team in raw_teams_dict}
 
-        # Clean string fields
-        record["Team_name"] = clean_string(record.get("Team_name"))
-        record["Oppt_name"] = clean_string(record.get("Oppt_name"))
+    # Select and transform data
+    transformed_ags_data = [
+        {
+            "Game_id": record.get("game_id"),
+            "Team_name": clean_string(record.get("team")),
+            "Oppt_name": clean_string(record.get("opponent")),
+            "Offense_plays": record.get("offense.plays"),
+            "Offense_pass_ppa": clean_float(record.get("offense.passing_plays.total_ppa")),
+            "Offense_rush_ppa": clean_float(record.get("offense.rushing_plays.total_ppa")),
+            "Offense_success_rate": clean_float(record.get("offense.success_rate")),
+            "Offense_explosiveness": clean_float(record.get("offense.explosiveness")),
+            "Defense_plays": record.get("defense.plays"),
+            "Defense_pass_ppa": clean_float(record.get("defense.passing_plays.total_ppa")),
+            "Defense_rush_ppa": clean_float(record.get("defense.rushing_plays.total_ppa")),
+            "Defense_success_rate": clean_float(record.get("offense.success_rate")),
+            "Defense_explosiveness": clean_float(record.get("defense.explosiveness"))
+        }
+        for record in ags_raw_data
+        if record.get("team") in valid_team_set and record.get("opponent") in valid_team_set  # Only FBS teams
+    ]
 
-        transformed_data.append(record)
+    # Convert to DataFrame
+    transformed_ags_df = pd.DataFrame(transformed_ags_data)
+    print(f"Filtered and transformed data contains {len(transformed_ags_df)} records.")
+    # print(transformed_df.head())
+    transformed_ags_df = map_team_id(transformed_ags_df, team_mapping, "Team_name")
 
-    # Create a DataFrame from the transformed data
-    transformed_df = pd.DataFrame(transformed_data)
-    print(f"Transformed data contains {len(transformed_df)} records.")
+    # Handle unmapped teams
+    unmapped_teams = transformed_ags_df[transformed_ags_df["Team_id"].isnull()]
+    if not unmapped_teams.empty:
+        print("Warning: The following teams could not be mapped to Team_id:")
+        print(unmapped_teams[["Team_name"]].drop_duplicates())
 
     # Save the transformed DataFrame to a CSV file
-    transformed_df.to_csv(output_csv, index=False, encoding='utf-8-sig')
-    print(f"Transformed data saved to {output_csv}")
-
-
-def main():
-    #transform_fbs_teams(teams_input="data/teams_raw.json", teams_output="data/teams.csv")
-    #transform_game_results(games_input="data/game_results_raw.json", games_output="data/game_results_bulk.csv")
-    #transform_recruit_rankings(input_json="data/recruit_rankings.json", output_csv="data/recruit_rankings.csv")
-    #transform_returning_ppa(input_json="data/returning_ppa.json", output_csv="data/returning_ppa.csv")
-    #transform_sp_ratings(input_json="data/sp_ratings.json", output_csv="data/sp_ratings.csv")
-    #transform_advanced_stats(input_json="data/combined_advanced_game_stats.json", output_csv="data/advanced_game_stats_bulk.csv")
-    transform_betting_lines(input_json="data/betting_lines.json", output_csv="data/betting_lines.csv")
-
-
-if __name__ == "__main__":
-    main()
+    transformed_ags_df.to_csv(ags_output, index=False, encoding='utf-8-sig')
+    print(f"Transformed data saved to {ags_output}")
 
