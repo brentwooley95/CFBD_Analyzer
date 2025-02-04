@@ -1,0 +1,23 @@
+# macOS-specific files
+.DS_Store
+data/.DS_Store
+src/.DS_Store
+data/Extract_bulk/.DS_Store
+data/Transformed_bulk/.DS_Store
+
+# PyCharm project files
+.idea/
+
+# Compiled Python files
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Data files (adjust as needed)
+data/*.json
+data/*.csv
+
+# Sensitive files
+config.yaml
