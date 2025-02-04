@@ -2,7 +2,7 @@
 import argparse
 from src.extract import *
 from src.transform import *
-from src.utils import load_config
+from src.utils import load_config, parse_years
 import pandas as pd
 
 
@@ -10,15 +10,6 @@ def load_team_mapping(fbs_teams_path):
     """Loads the FBS teams dataset and creates a mapping of Team_name to Team_id."""
     fbs_teams_df = pd.read_csv(fbs_teams_path)
     return fbs_teams_df.set_index("Team_name")["Team_id"].to_dict()
-
-
-def parse_years(years):
-    """Parses a 'YYYY-YYYY' string into start and end year."""
-    try:
-        start_year, end_year = map(int, years.split("-"))
-        return start_year, end_year
-    except ValueError:
-        raise argparse.ArgumentTypeError("Invalid format for --years. Use 'YYYY-YYYY'.")
 
 
 def main():
@@ -76,16 +67,19 @@ def main():
         "recruits": lambda: transform_recruit_rankings(
             paths["recruit_rankings_raw"],
             paths["recruit_rankings_tran"],
+            paths["fbs_teams_raw"],
             team_mapping
         ),
         "ret_ppa": lambda: transform_returning_ppa(
             paths["returning_ppa_raw"],
             paths["returning_ppa_tran"],
+            paths["fbs_teams_raw"],
             team_mapping
         ),
         "ratings": lambda: transform_sp_ratings(
             paths["sp_ratings_raw"],
             paths["sp_ratings_tran"],
+            paths["fbs_teams_raw"],
             team_mapping
         ),
         "games": lambda: transform_game_results(
