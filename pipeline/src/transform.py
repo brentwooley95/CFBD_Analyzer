@@ -283,7 +283,7 @@ def transform_advanced_stats(ags_input, ags_output, valid_teams, team_mapping):
             "Defense_plays": record.get("defense.plays"),
             "Defense_pass_ppa": clean_float(record.get("defense.passing_plays.total_ppa")),
             "Defense_rush_ppa": clean_float(record.get("defense.rushing_plays.total_ppa")),
-            "Defense_success_rate": clean_float(record.get("offense.success_rate")),
+            "Defense_success_rate": clean_float(record.get("defense.success_rate")),
             "Defense_explosiveness": clean_float(record.get("defense.explosiveness"))
         }
         for record in ags_raw_data
