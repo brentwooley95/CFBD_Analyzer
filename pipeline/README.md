@@ -1,5 +1,5 @@
-# CS406_Project
-College Football FBS Teams Data Pipeline
+
+# College Football FBS Teams Data Pipeline
 
 Quick Overview
 This project uses a basic ETL (Extract, Transform, Load) pattern to create a pipeline for loading team data into a targeted database
