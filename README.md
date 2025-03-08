@@ -1,5 +1,48 @@
 College Football Matchup tool.
 
+This project focuses on aggregating and visualizing data
+and aims to be a resource for football and statistic fans alike.
+
+This tool is a web application designed to allow users to explore
+a database of college football game data over the past 10 years. Users can view and compare
+individual teams across several metrics and apply filters to view a particular season or
+level of competition. The dataset is sourced from collegefootballdata.com and is dynamically
+updated to include the latest game data each week. 
+
+
+
+HOME PAGE:
+
+Top 5 teams all-season in each defined metric.
+- Offensive & Defensive Passing Scores
+- Offensive & Defensive Rushing Scores
+- Offensive & Defensive Epxlosive/Containment Scores
+- Overall Record
+
+
+TEAM PAGE:
+
+To be determined... Likely an all-season aggregate page with graphs detailing change across...
+- Offensive & Defensive Passing Scores
+- Offensive & Defensive Rushing Scores
+- Offensive & Defensive Epxlosive/Containment Scores
+- Sucess Rates
+- Coaching Records/Changes
+- Recruiting Ranks
+- Season Results/Record by Opponent Tier
+
+TEAM COMPARISON PAGE:
+
+Single-season aggregates.
+- Offensive & Defensive Passing Scores
+- Offensive & Defensive Rushing Scores
+- Offensive & Defensive Epxlosive/Containment Scores
+- Sucess Rates
+- Coaching Records/Changes
+- Recruiting Ranks
+- Season Results/Record by Opponent Tier
+
+
 Advanced Metric Definitions:
 
 All metrics are borrowed or based on data found at https://collegefootballdata.com
@@ -34,38 +77,9 @@ This score works the same as the defensive passing score but is instead based on
 
 
 
-For example
 
 
 
-
-
-
-HOME PAGE Data:
-
-Top 5 Passing Offense Teams by season (past 10 years)
-Top 5 Rushing Offense Teams by season (past 10 years)
-Top 5 Offensive Explosive Teams by season
-
-
-Top 5 Passing Defense Teams by season
-Top 5 Rushing Defense Teams by season
-Top 5 Defensive Containment Teams by season
-
-Best overall record
-BEst coaching record
-
-
-
-TEAM PAGE:
-
-
-
-
-TEAM COMPARISON PAGE:
-
-
-Aggregated Game Metrics
 
 
 
