@@ -56,9 +56,13 @@ This score is calculated based on the total predicted points added (PPA or EPA) 
 This score works the same as the passing score but is instead based on total PPA for rushing plays in each game.
 
 **Offensive Success Rate:** The rate of any of the following happening on any given play:
+
 -the offense scored
+
 -1st downs which gain at least 50% of the yards to go
+
 -2nd downs which gain at least 70% of the yards to go
+
 -3rd and 4th downs which gain at least 100% of the yards to go
 
 
