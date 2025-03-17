@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.routes import stats
+from backend.routes import team_comparison, team, games, home_leaders
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -18,9 +18,13 @@ app.add_middleware(
 )
 
 # Include API routes
-app.include_router(stats.router)
+app.include_router(team_comparison.router)
+app.include_router(team.router)
+app.include_router(games.router)
+app.include_router(home_leaders.router)
 
 
 @app.get("/")
 def root():
     return {"message": "FastAPI Backend is Running!"}
+
