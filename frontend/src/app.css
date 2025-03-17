@@ -51,3 +51,58 @@
     transform: rotate(360deg);
   }
 }
+
+td {
+    background-color: inherit !important;
+}
+
+.bg-very-red {
+    background-color: #d73027 !important; /* Deep Red */
+    color: white !important;
+    text-align: center;
+}
+
+.bg-light-red {
+    background-color: #fc8d59 !important; /* Lighter Red */
+    color: black !important;
+    text-align: center;
+}
+
+.bg-orange {
+    background-color: #fee08b !important; /* Orange */
+    color: black !important;
+    text-align: center;
+}
+
+.bg-yellow {
+    background-color: #ffffbf !important; /* Yellow */
+    color: black !important;
+    text-align: center;
+}
+
+.bg-light-green {
+    background-color: #d9ef8b !important; /* Light Green */
+    color: black !important;
+    text-align: center;
+}
+
+.bg-green {
+    background-color: #91cf60 !important; /* Green */
+    color: black !important;
+    text-align: center;
+}
+
+.bg-very-green {
+    background-color: #1a9850 !important; /* Dark Green */
+    color: white !important;
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
