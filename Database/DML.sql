@@ -266,3 +266,155 @@ CREATE OR REPLACE VIEW game_stats AS
     avg_allowed_explosiveness
    FROM normalized_team_stats
   WHERE games_played >= 3;
+
+
+/*
+
+Creates view that finds the last "postseason" game type for each team, each season. Defined as "postseason results"
+
+*/
+
+ WITH last_game AS (
+         SELECT DISTINCT ON (g.season, t.team_id) t.team_id,
+            t.team_name,
+            g.season,
+            g.game_id,
+            g.game_type,
+            g.postseason,
+            g.home_team_id,
+            g.away_team_id,
+            g.home_points,
+            g.away_points,
+            g.game_date
+           FROM game_results g
+             JOIN teams t ON t.team_id = g.home_team_id OR t.team_id = g.away_team_id
+          ORDER BY g.season, t.team_id, g.game_date DESC
+        )
+ SELECT lg.team_name,
+    lg.season,
+        CASE
+            WHEN lg.postseason IS NOT NULL THEN lg.postseason
+            WHEN lg.game_type::text = 'postseason'::text THEN 'No name provided'::character varying
+            ELSE 'No Postseason'::character varying
+        END AS postseason_name,
+        CASE
+            WHEN lg.team_id = lg.home_team_id THEN away_t.team_name
+            ELSE home_t.team_name
+        END AS opponent_name,
+        CASE
+            WHEN lg.team_id = lg.home_team_id AND lg.home_points > lg.away_points THEN 'Win'::text
+            WHEN lg.team_id = lg.away_team_id AND lg.away_points > lg.home_points THEN 'Win'::text
+            ELSE 'Loss'::text
+        END AS result,
+        CASE
+            WHEN lg.team_id = lg.home_team_id THEN lg.home_points
+            ELSE lg.away_points
+        END AS team_score,
+        CASE
+            WHEN lg.team_id = lg.home_team_id THEN lg.away_points
+            ELSE lg.home_points
+        END AS opponent_score
+   FROM last_game lg
+     JOIN teams home_t ON home_t.team_id = lg.home_team_id
+     JOIN teams away_t ON away_t.team_id = lg.away_team_id;
+
+
+/* 
+
+Creates view "game performance" that shows all season games for a specific team.
+
+*/
+
+ WITH weight_assignments AS (
+         SELECT ags.game_id,
+            ags.team_id,
+            ags.oppt_tier,
+                CASE
+                    WHEN ags.oppt_tier::text = 'Tier 1'::text THEN 1.25
+                    WHEN ags.oppt_tier::text = 'Tier 2'::text THEN 1.10
+                    WHEN ags.oppt_tier::text = 'Tier 3'::text THEN 1.00
+                    WHEN ags.oppt_tier::text = 'Tier 4'::text THEN 1.00
+                    WHEN ags.oppt_tier::text = 'Tier 5'::text THEN 0.85
+                    WHEN ags.oppt_tier::text = 'Tier 6'::text THEN 0.70
+                    ELSE 1.00
+                END AS offense_weight,
+                CASE
+                    WHEN ags.oppt_tier::text = 'Tier 1'::text THEN 0.70
+                    WHEN ags.oppt_tier::text = 'Tier 2'::text THEN 0.85
+                    WHEN ags.oppt_tier::text = 'Tier 3'::text THEN 1.00
+                    WHEN ags.oppt_tier::text = 'Tier 4'::text THEN 1.00
+                    WHEN ags.oppt_tier::text = 'Tier 5'::text THEN 1.10
+                    WHEN ags.oppt_tier::text = 'Tier 6'::text THEN 1.25
+                    ELSE 1.00
+                END AS defense_weight
+           FROM advanced_game_stats ags
+        ), weighted_values AS (
+         SELECT ags.game_id,
+            ags.team_id,
+            ags.oppt_tier,
+            wa.offense_weight,
+            wa.defense_weight,
+                CASE
+                    WHEN ags.offense_pass_ppa >= 0::double precision THEN ags.offense_pass_ppa * wa.offense_weight::double precision
+                    ELSE ags.offense_pass_ppa / wa.offense_weight::double precision
+                END AS weighted_offense_pass_ppa,
+                CASE
+                    WHEN ags.offense_rush_ppa >= 0::double precision THEN ags.offense_rush_ppa * wa.offense_weight::double precision
+                    ELSE ags.offense_rush_ppa / wa.offense_weight::double precision
+                END AS weighted_offense_rush_ppa,
+                CASE
+                    WHEN ags.offense_explosiveness >= 0::double precision THEN ags.offense_explosiveness * wa.offense_weight::double precision
+                    ELSE ags.offense_explosiveness / wa.offense_weight::double precision
+                END AS weighted_offense_explosiveness,
+            ags.offense_success_rate,
+                CASE
+                    WHEN ags.defense_pass_ppa >= 0::double precision THEN ags.defense_pass_ppa * wa.defense_weight::double precision
+                    ELSE ags.defense_pass_ppa / wa.defense_weight::double precision
+                END AS weighted_defense_pass_ppa,
+                CASE
+                    WHEN ags.defense_rush_ppa >= 0::double precision THEN ags.defense_rush_ppa * wa.defense_weight::double precision
+                    ELSE ags.defense_rush_ppa / wa.defense_weight::double precision
+                END AS weighted_defense_rush_ppa,
+                CASE
+                    WHEN ags.defense_explosiveness >= 0::double precision THEN ags.defense_explosiveness * wa.defense_weight::double precision
+                    ELSE ags.defense_explosiveness / wa.defense_weight::double precision
+                END AS weighted_defense_explosiveness,
+            ags.defense_success_rate
+           FROM advanced_game_stats ags
+             JOIN weight_assignments wa ON ags.game_id = wa.game_id AND ags.team_id = wa.team_id
+        )
+ SELECT t.team_name,
+    opp.team_name AS opponent_name,
+    wv.oppt_tier,
+    gr.season,
+    gr.week,
+    gr.game_type,
+    gr.game_date,
+        CASE
+            WHEN gr.home_team_id = wv.team_id AND gr.home_points > gr.away_points THEN 'Win'::text
+            WHEN gr.away_team_id = wv.team_id AND gr.away_points > gr.home_points THEN 'Win'::text
+            ELSE 'Loss'::text
+        END AS result,
+        CASE
+            WHEN gr.home_team_id = wv.team_id THEN gr.home_points
+            ELSE gr.away_points
+        END AS team_score,
+        CASE
+            WHEN gr.home_team_id = wv.team_id THEN gr.away_points
+            ELSE gr.home_points
+        END AS opponent_score,
+    wv.weighted_offense_pass_ppa,
+    wv.weighted_offense_rush_ppa,
+    wv.weighted_offense_explosiveness,
+    wv.offense_success_rate,
+    wv.weighted_defense_pass_ppa,
+    wv.weighted_defense_rush_ppa,
+    wv.weighted_defense_explosiveness,
+    wv.defense_success_rate
+   FROM weighted_values wv
+     JOIN game_results gr ON wv.game_id = gr.game_id
+     JOIN teams t ON wv.team_id = t.team_id
+     JOIN teams opp ON gr.home_team_id = opp.team_id AND gr.away_team_id = wv.team_id OR gr.away_team_id = opp.team_id AND gr.home_team_id = wv.team_id;
+
+
+
