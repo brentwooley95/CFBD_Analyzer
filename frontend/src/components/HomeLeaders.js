@@ -6,7 +6,7 @@ import {
     fetchPassDefenseLeaders,
     fetchRushDefenseLeaders,
     fetchContainmentLeaders
-} from "../services/api";
+} from "../services/sbQueries";
 
 /* Leaderboard components (6 total) shown on Home page */
 const HomeLeaders = () => {
