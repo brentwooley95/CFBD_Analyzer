@@ -15,6 +15,11 @@ export const fetchTeams = async () => {
 };
 
 // Placeholder functions
+
+export const fetchSeasons = async () => {
+  return [];
+};
+
 export const fetchGameStats = async (season1, team1, season2, team2) => {
   if (!season1 || !team1 || !season2 || !team2) return [];
   return [];
