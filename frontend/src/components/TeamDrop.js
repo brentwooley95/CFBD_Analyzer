@@ -10,7 +10,9 @@ const TeamDrop = ({ teams, selectedTeam, handleChange }) => {
                     <select name="team" value={selectedTeam} onChange={handleChange} className="form-select">
                         <option value="">Select Team</option>
                         {teams.map((team) => (
-                            <option key={team} value={team}>{team}</option>
+                            <option key={team.team_id} value={team.team_name}>
+                                {team.team_name}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -20,4 +22,5 @@ const TeamDrop = ({ teams, selectedTeam, handleChange }) => {
 };
 
 export default TeamDrop;
+
 
