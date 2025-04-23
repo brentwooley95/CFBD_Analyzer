@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import GameDrop from "../components/GameDrop";
 import GamePerformances from "../components/GamePerformances";
-import { fetchTeams, fetchSeasons, fetchGamePerformance } from "../services/api";
+import { fetchTeams, fetchSeasons, fetchGamePerformance } from "../services/sbQueries";
 
 const Games = () => {
     const [teams, setTeams] = useState([]);
