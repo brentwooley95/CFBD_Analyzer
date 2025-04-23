@@ -6,7 +6,7 @@ import {
     fetchTeamRecordBreakdown,
     fetchTeamPostseasonResults,
     fetchTeamRecruitingRankings
-} from '../services/api';
+} from '../services/sbQueries';
 import TeamGameStats from '../components/TeamGameStats';
 import TeamRecordBreakdown from '../components/TeamRecordBreakdown';
 import TeamPostseasonResults from '../components/TeamPostseasonResults';
