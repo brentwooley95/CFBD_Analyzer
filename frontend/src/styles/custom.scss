@@ -1,0 +1,23 @@
+// Import Bootstrap core
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/maps";
+
+// Define additional color classes
+$theme-colors: (
+    "red-200": #f4cccc,
+    "red-400": #e57373,
+    "red-600": #d32f2f,
+    "yellow-200": #fff9c4,
+    "yellow-500": #ffeb3b,
+    "green-200": #c8e6c9,
+    "green-400": #66bb6a,
+    "green-600": #2e7d32
+);
+
+// Merge the extended colors with Bootstrap's defaults
+$theme-colors: map-merge($theme-colors, $theme-colors);
+
+// Import Bootstrap utilities
+@import "bootstrap/scss/bootstrap";
