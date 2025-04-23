@@ -4,16 +4,7 @@ const api = axios.create({
     baseURL: 'http://127.0.0.1:8000',
 });
 
-// Fetch teams from FastAPI
-export const fetchTeams = async () => {
-    try {
-        const response = await api.get('/teams');
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching teams:', error);
-        return [];
-    }
-};
+
 
 // Fetch seasons from FastAPI
 export const fetchSeasons = async () => {
