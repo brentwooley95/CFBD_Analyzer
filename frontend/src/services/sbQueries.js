@@ -11,5 +11,70 @@ export const fetchTeams = async () => {
         return [];
     }
 
+
+export const fetchGameStats = async (season1, team1, season2, team2) => {
+  if (!season1 || !team1 || !season2 || !team2) return [];
+  return [];
+};
+
+export const fetchRecordBreakdown = async (season1, team1, season2, team2) => {
+  if (!season1 || !team1 || !season2 || !team2) return [];
+  return [];
+};
+
+export const fetchPostseasonResults = async (season1, team1, season2, team2) => {
+  return [];
+};
+
+export const fetchRecruitingRankings = async (season1, team1, season2, team2) => {
+  if (!season1 || !team1 || !season2 || !team2) return [];
+  return [];
+};
+
+export async function fetchTeamGameStats(team) {
+  return [];
+}
+
+export async function fetchTeamRecordBreakdown(team) {
+  return [];
+}
+
+export async function fetchTeamPostseasonResults(team) {
+  return [];
+}
+
+export async function fetchTeamRecruitingRankings(team) {
+  return [];
+}
+
+export const fetchGamePerformance = async (team, season) => {
+  return [];
+};
+
+export const fetchPassLeaders = async () => {
+  return [];
+};
+
+export const fetchRushLeaders = async () => {
+  return [];
+};
+
+export const fetchExplosiveLeaders = async () => {
+  return [];
+};
+
+export const fetchPassDefenseLeaders = async () => {
+  return [];
+};
+
+export const fetchRushDefenseLeaders = async () => {
+  return [];
+};
+
+export const fetchContainmentLeaders = async () => {
+  return [];
+};
+
+
     return data;
 };
