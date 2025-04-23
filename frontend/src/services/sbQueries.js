@@ -1,17 +1,20 @@
 import { supabase } from './supabaseClient';
 
 export const fetchTeams = async () => {
-    const { data, error } = await supabase
-        .from('teams')
-        .select('*')
-        .order('team_name');
+  const { data, error } = await supabase
+    .from('teams')
+    .select('*')
+    .order('team_name');
 
-    if (error) {
-        console.error('Error fetching teams from Supabase:', error);
-        return [];
-    }
+  if (error) {
+    console.error('Error fetching teams from Supabase:', error);
+    return [];
+  }
 
+  return data;  // ✅ This now properly belongs to fetchTeams
+};
 
+// Placeholder functions
 export const fetchGameStats = async (season1, team1, season2, team2) => {
   if (!season1 || !team1 || !season2 || !team2) return [];
   return [];
@@ -73,8 +76,4 @@ export const fetchRushDefenseLeaders = async () => {
 
 export const fetchContainmentLeaders = async () => {
   return [];
-};
-
-
-    return data;
 };
