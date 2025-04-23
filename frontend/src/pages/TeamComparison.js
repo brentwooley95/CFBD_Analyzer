@@ -10,7 +10,7 @@ import {
     fetchGameStats,
     fetchRecordBreakdown,
     fetchPostseasonResults,
-    fetchRecruitingRankings } from '../services/api';
+    fetchRecruitingRankings } from '../services/sbQueries';
 
 const TeamComparison = () => {
     const [teams, setTeams] = useState([]);
