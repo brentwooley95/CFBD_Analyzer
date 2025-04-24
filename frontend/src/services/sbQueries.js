@@ -19,7 +19,7 @@ export const fetchTeams = async () => {
 export const fetchSeasons = async () => {
   const { data, error } = await supabase
     .from('game_results')
-    .select('season', { count: 'exact', head: false }) // just to ensure only 'season' is selected
+    .select('season', { distinct: true }) // just to ensure only 'season' is selected
     .order('season', { ascending: false });
 
   if (error) {
