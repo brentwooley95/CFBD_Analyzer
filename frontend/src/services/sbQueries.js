@@ -28,7 +28,7 @@ export const fetchSeasons = async () => {
   }
 
   // Extract distinct seasons
-  const seasons = data.map(item => item.season))];
+  const seasons = data.map(item => item.season);
   return seasons;
 };
 
