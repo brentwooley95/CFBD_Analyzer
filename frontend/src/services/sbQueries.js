@@ -17,8 +17,21 @@ export const fetchTeams = async () => {
 // Placeholder functions
 
 export const fetchSeasons = async () => {
-  return [];
+  const { data, error } = await supabase
+    .from('game_results')
+    .select('season', { count: 'exact', head: false }) // just to ensure only 'season' is selected
+    .order('season', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching seasons:', error);
+    return [];
+  }
+
+  // Extract distinct seasons
+  const seasons = [...new Set(data.map(item => item.season))];
+  return seasons;
 };
+
 
 export const fetchGameStats = async (season1, team1, season2, team2) => {
   if (!season1 || !team1 || !season2 || !team2) return [];
