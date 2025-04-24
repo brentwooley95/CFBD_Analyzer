@@ -18,18 +18,16 @@ export const fetchTeams = async () => {
 
 export const fetchSeasons = async () => {
   const { data, error } = await supabase
-    .from('game_results')
-    .select('season');
+    .rpc('get_distinct_seasons');
 
   if (error) {
     console.error('Error fetching seasons:', error);
     return [];
   }
 
-  // Use Set to deduplicate, then sort in descending order
-  const uniqueSeasons = [...new Set(data.map(item => item.season))].sort((a, b) => b - a);
-  return uniqueSeasons;
+  return data.map(item => item.season);
 };
+
 
 
 
