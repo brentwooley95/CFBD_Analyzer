@@ -29,12 +29,27 @@ export const fetchSeasons = async () => {
 };
 
 
-
-
 export const fetchGameStats = async (season1, team1, season2, team2) => {
-  if (!season1 || !team1 || !season2 || !team2) return [];
-  return [];
+  if (!season1 || !team1 || !season2 || !team2) {
+    console.error("Missing parameters for game stats fetch");
+    return [];
+  }
+
+  const { data, error } = await supabase.rpc('fetch_game_stats', {
+    season1,
+    team1,
+    season2,
+    team2,
+  });
+
+  if (error) {
+    console.error("Error fetching game stats via RPC:", error);
+    return [];
+  }
+
+  return data;
 };
+
 
 export const fetchRecordBreakdown = async (season1, team1, season2, team2) => {
   if (!season1 || !team1 || !season2 || !team2) return [];
