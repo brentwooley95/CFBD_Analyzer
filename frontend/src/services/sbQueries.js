@@ -69,8 +69,22 @@ export const fetchRecordBreakdown = async (season1, team1, season2, team2) => {
 
 
 export const fetchPostseasonResults = async (season1, team1, season2, team2) => {
-  return [];
+  const { data, error } = await supabase
+    .rpc('fetch_postseason_results', {
+      season1,
+      team1,
+      season2,
+      team2
+    });
+
+  if (error) {
+    console.error("Error fetching postseason results:", error);
+    return [];
+  }
+
+  return data;
 };
+
 
 export const fetchRecruitingRankings = async (season1, team1, season2, team2) => {
   if (!season1 || !team1 || !season2 || !team2) return [];
