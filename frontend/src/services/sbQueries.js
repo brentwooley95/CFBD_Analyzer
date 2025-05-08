@@ -105,9 +105,41 @@ export const fetchRecruitingRankings = async (season1, team1, season2, team2) =>
 };
 
 
-export async function fetchTeamGameStats(team) {
-  return [];
-}
+export const fetchTeamGameStats = async (team) => {
+  try {
+    // Step 1: Get all distinct seasons
+    const { data: seasonData, error: seasonError } = await supabase
+      .from('game_results')
+      .select('season')
+      .order('season', { ascending: true });
+
+    if (seasonError) {
+      console.error('Error fetching seasons:', seasonError);
+      return [];
+    }
+
+    const seasons = [...new Set(seasonData.map(item => item.season))];
+
+    // Step 2: Fetch game stats for the given team across those seasons
+    const { data, error } = await supabase
+      .from('game_stats')
+      .select('*')
+      .in('season', seasons)
+      .eq('team_name', team)
+      .order('season', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching team game stats:', error);
+      return [];
+    }
+
+    return data;
+  } catch (err) {
+    console.error('Unexpected error in fetchTeamGameStats:', err);
+    return [];
+  }
+};
+
 
 export async function fetchTeamRecordBreakdown(team) {
   return [];
