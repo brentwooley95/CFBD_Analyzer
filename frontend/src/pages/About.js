@@ -28,7 +28,7 @@ const About = () => {
        </p>
       <h4>Offensive Metrics</h4>
       <ul>
-        <li><strong>Offensive Passing Score:</strong> A value between 0 and 100 indicating the relative performance of a team's ability to pass the ball effectively. 
+        <li><strong>Offensive Passing Score:</strong> A value between 0 and 100 indicating the relative performance of a team's ability to pass the ball effectively.</li>
         <li><strong>Offensive Rushing Score:</strong> Similar to the passing score but based on total PPA for rushing plays.</li>
         <li><strong>Offensive Success Rate:</strong> The rate of a play being "successful" based on down and distance. See official definitions.</li>
         <li><strong>Offensive Explosiveness:</strong> Measures how "big" successful plays are on average.</li>
