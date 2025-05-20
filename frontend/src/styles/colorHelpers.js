@@ -8,7 +8,6 @@ export const getColorClass = (value, isSuccessRate = false, reverseScale = false
         return darkBackgrounds.includes(bgClass) ? `${bgClass} text-white` : bgClass;
     };
 
-
     if (isSuccessRate) {
         thresholds = reverseScale
             ? [
@@ -35,5 +34,6 @@ export const getColorClass = (value, isSuccessRate = false, reverseScale = false
         ];
     }
 
-    return thresholds.find(t => value < t.limit)?.color || "";
+    const bgClass = thresholds.find(t => value < t.limit)?.color || "";
+    return applyTextColor(bgClass);
 };
