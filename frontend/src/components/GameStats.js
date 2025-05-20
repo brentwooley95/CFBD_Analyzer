@@ -12,6 +12,12 @@ const GameStats = ({ gameStats, formData }) => {
     const getColorClass = (value, isSuccessRate = false, reverseScale = false) => {
         let thresholds;
 
+        const applyTextColor = (bgClass) => {
+        // Apply white text to darker backgrounds
+        const darkBackgrounds = ["bg-success", "bg-danger"];
+        return darkBackgrounds.includes(bgClass) ? `${bgClass} text-white` : bgClass;
+    };
+
         if (isSuccessRate) {
             thresholds = reverseScale
                 ? [ // Reverse scale for avg_allowed_success (Defense)
@@ -38,7 +44,8 @@ const GameStats = ({ gameStats, formData }) => {
             ];
         }
 
-        return thresholds.find(t => value < t.limit)?.color || "";
+        const bgClass = thresholds.find(t => value < t.limit)?.color || "";
+        return applyTextColor(bgClass);
     };
 
     if (!team1Stats || !team2Stats) {
