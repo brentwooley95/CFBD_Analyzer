@@ -62,9 +62,10 @@ const TeamGameStats = ({ gameStats }) => {
     const offenseData = {
         labels: seasons,
         datasets: [
-            { label: 'Passing Score', data: passingScores, borderColor: 'blue', fill: false },
-            { label: 'Rushing Score', data: rushingScores, borderColor: 'red', fill: false },
-            { label: 'Explosiveness', data: explosiveness, borderColor: 'orange', fill: false },
+            { label: 'Passing Score', data: passingScores, borderColor: 'blue', backgroundColor: 'blue', showLine: false, pointRadius:6, pointHoverRadius: 8 },
+            { label: 'Rushing Score', data: rushingScores, borderColor: 'red', backgroundColor: 'red', showLine: false, pointRadius:6, pointHoverRadius: 8 },
+            { label: 'Explosiveness', data: explosiveness, borderColor: 'orange', backgroundColor: 'orange', showLine: false, pointRadius:6, pointHoverRadius: 8 },
+
             { label: 'Average (50)', data: avgLine, borderColor: 'black', borderDash: [5, 5], fill: false }
         ]
     };
@@ -73,9 +74,9 @@ const TeamGameStats = ({ gameStats }) => {
     const defenseData = {
         labels: seasons,
         datasets: [
-            { label: 'Defensive Passing Score', data: defPassingScores, borderColor: 'blue', fill: false },
-            { label: 'Defensive Rushing Score', data: defRushingScores, borderColor: 'red', fill: false },
-            { label: 'Containment', data: containment, borderColor: 'orange', fill: false },
+            { label: 'Defensive Passing Score', data: defPassingScores, borderColor: 'blue', backgroundColor: 'blue', showLine: false, pointRadius:6, pointHoverRadius: 8},
+            { label: 'Defensive Rushing Score', data: defRushingScores, borderColor: 'red', backgroundColor: 'red', showLine: false, pointRadius:6, pointHoverRadius: 8},
+            { label: 'Containment', data: containment, borderColor: 'orange', backgroundColor: 'orange', showLine: false, pointRadius:6, pointHoverRadius: 8},
             { label: 'Average (50)', data: avgLine, borderColor: 'black', borderDash: [5, 5], fill: false }
         ]
     };
