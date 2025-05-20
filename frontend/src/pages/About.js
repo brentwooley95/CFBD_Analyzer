@@ -11,11 +11,24 @@ const About = () => {
       </p>
       <p>For reference on definitions of some of the metrics described below, please see <a href="https://collegefootballdata.com/glossary" target="_blank" rel="noopener noreferrer">their glossary</a>.</p>
 
-      <h3>Aggregated Metric Definitions</h3>
+      
 
+      <h3>Data Constraints</h3>
+      <p>
+        This dataset covers games from <strong>2014 to the present</strong> and has some constraints to maintain consistency and accuracy:
+      </p>
+      <ul>
+        <li><strong>Excludes garbage time plays.</strong> Thanks to an option provided by the data source, ensuring metrics reflect meaningful game situations.</li>
+        <li><strong>Only includes FBS vs. FBS games:</strong> Prevents skew from matchups against typically less competitive FCS teams.</li>
+      </ul>
+
+      <h3>Key Metric Definitions</h3>
+       <p>
+        Passing and rushing scores are calculated based on the total predicted points added (PPA or EPA) metric for valid plays (see constraints) in each game. Total PPA in a given game is weighted against the tier of the opponent, so more PPA against tougher/higher-tiered opponents results in a higher overall score and vice-versa.
+       </p>
       <h4>Offensive Metrics</h4>
       <ul>
-        <li><strong>Offensive Passing Score:</strong> A value between 0 and 100 indicating the relative performance of a team's ability to pass the ball effectively in a given season. This score is calculated based on the total predicted points added (PPA or EPA) metric for passing plays in each game. Total PPA in a given game is weighted against the tier of the opponent, so more PPA against tougher/higher-tiered opponents results in a higher overall score and vice-versa.</li>
+        <li><strong>Offensive Passing Score:</strong> A value between 0 and 100 indicating the relative performance of a team's ability to pass the ball effectively. 
         <li><strong>Offensive Rushing Score:</strong> Similar to the passing score but based on total PPA for rushing plays.</li>
         <li><strong>Offensive Success Rate:</strong> The rate of a play being "successful" based on down and distance. See official definitions.</li>
         <li><strong>Offensive Explosiveness:</strong> Measures how "big" successful plays are on average.</li>
@@ -23,19 +36,9 @@ const About = () => {
 
       <h4>Defensive Metrics</h4>
       <ul>
-        <li><strong>Defensive Passing Score:</strong> A value between 0 and 100 indicating the relative performance of a team's ability to prevent opponents from passing effectively. Calculated similarly to offensive passing but in reverse.</li>
-        <li><strong>Defensive Rushing Score:</strong> Similar to the defensive passing score but focused on rushing plays.</li>
+        <li><strong>Defensive Passing & Rushing Scores:</strong> A value between 0 and 100 indicating the relative ability to prevent PPA against either passing or rushing plays.</li>
         <li><strong>Defensive Success Rate:</strong> The inverse of offensive success rate—measuring how well the defense prevents successful plays.</li>
         <li><strong>Defensive Containment:</strong> Measures how well a team prevents explosive plays from the opposing offense.</li>
-      </ul>
-
-      <h3>Data Constraints</h3>
-      <p>
-        This dataset covers games from <strong>2014 to the present</strong> and has some constraints to maintain consistency and accuracy:
-      </p>
-      <ul>
-        <li><strong>Excludes garbage time plays:</strong> Thanks to an option provided by the data source, ensuring metrics reflect meaningful game situations.</li>
-        <li><strong>Only includes FBS vs. FBS games:</strong> Prevents skew from matchups against typically less competitive FCS teams.</li>
       </ul>
 
       <h3>Opponent Tier Breakdown</h3>
