@@ -32,10 +32,10 @@ const TeamGameStats = ({ gameStats }) => {
     const offenseData = {
         labels: seasons,
         datasets: [
-            { label: 'Passing Score', data: passingScores, borderColor: 'blue', fill: false, showLine: false },
+            { label: 'Passing Score', data: passingScores, borderColor: 'blue', backgroundColor: 'blue, showLine: false, pointRadius:6, pointHoverRadius: 8 },
             { label: 'Rushing Score', data: rushingScores, borderColor: 'red', fill: false, showLine: false },
             { label: 'Explosiveness', data: explosiveness, borderColor: 'orange', fill: false, showLine: false },
-            { label: 'Average (50)', data: avgLine, borderColor: 'black', borderDash: [5, 5], fill: false, showLine: false }
+            { label: 'Average (50)', data: avgLine, borderColor: 'black', borderDash: [5, 5], fill: false }
         ]
     };
 
