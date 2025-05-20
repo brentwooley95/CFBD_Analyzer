@@ -107,20 +107,17 @@ export const fetchRecruitingRankings = async (season1, team1, season2, team2) =>
 
 export const fetchTeamGameStats = async (team) => {
   try {
-    // Step 1: Get all distinct seasons
-    const { data: seasonData, error: seasonError } = await supabase
-      .from('game_results')
-      .select('season')
-      .order('season', { ascending: true });
+    // Step 1: Get all distinct seasons via RPC
+    const { data: seasonData, error: seasonError } = await supabase.rpc('get_distinct_seasons');
 
     if (seasonError) {
       console.error('Error fetching seasons:', seasonError);
       return [];
     }
 
-    const seasons = [...new Set(seasonData.map(item => item.season))];
+    const seasons = seasonData.map(item => item.season); // Ensure you extract the values correctly
 
-    // Step 2: Fetch game stats for the given team across those seasons
+    // Step 2: Fetch game stats for the given team across all seasons
     const { data, error } = await supabase
       .from('game_stats')
       .select('*')
@@ -142,41 +139,229 @@ export const fetchTeamGameStats = async (team) => {
 
 
 export async function fetchTeamRecordBreakdown(team) {
-  return [];
+  const { data, error } = await supabase.rpc('fetch_team_record_breakdown', {
+    team_input: team,
+  });
+
+  if (error) {
+    console.error('Error fetching team record breakdown:', error);
+    return [];
+  }
+
+  return data;
 }
+
 
 export async function fetchTeamPostseasonResults(team) {
-  return [];
+  try {
+    // Step 1: Get all distinct seasons via RPC
+    const { data: seasonData, error: seasonError } = await supabase.rpc('get_distinct_seasons');
+
+    if (seasonError) {
+      console.error('Error fetching seasons:', seasonError);
+      return [];
+    }
+
+    const seasons = seasonData.map(item => item.season);
+
+    // Step 2: Fetch postseason results for the given team across those seasons
+    const { data, error } = await supabase
+      .from('postseason_results')
+      .select(`
+        team_name,
+        season,
+        postseason_name,
+        opponent_name,
+        result,
+        team_score,
+        opponent_score
+      `)
+      .eq('team_name', team)
+      .in('season', seasons)
+      .order('season', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching postseason results:', error);
+      return [];
+    }
+
+    // Step 3: Nullify irrelevant fields when postseason = 'No Postseason'
+    const filtered = data.map(row => {
+      if (row.postseason_name === 'No Postseason') {
+        return {
+          ...row,
+          opponent_name: null,
+          result: null,
+          team_score: null,
+          opponent_score: null,
+        };
+      }
+      return row;
+    });
+
+    return filtered;
+  } catch (err) {
+    console.error('Unexpected error fetching postseason results:', err);
+    return [];
+  }
 }
+
 
 export async function fetchTeamRecruitingRankings(team) {
-  return [];
+  try {
+    // Step 1: Get all distinct seasons via RPC
+    const { data: seasonData, error: seasonError } = await supabase.rpc('get_distinct_seasons');
+
+    if (seasonError) {
+      console.error('Error fetching seasons:', seasonError);
+      return [];
+    }
+
+    const seasons = seasonData.map(item => item.season);
+
+    // Step 2: Look up the team_id based on team name
+    const { data: teamData, error: teamError } = await supabase
+      .from('teams')
+      .select('team_id')
+      .eq('team_name', team)
+      .single();
+
+    if (teamError || !teamData) {
+      console.error('Error fetching team_id:', teamError || 'Team not found');
+      return [];
+    }
+
+    const team_id = teamData.team_id;
+
+    // Step 3: Query recruit_rankings directly by team_id and season
+    const { data, error } = await supabase
+      .from('recruit_rankings')
+      .select('season, recruiting_rank, recruiting_points')
+      .eq('team_id', team_id)
+      .in('season', seasons)
+      .order('season', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching recruiting rankings:', error);
+      return [];
+    }
+
+    return data;
+  } catch (err) {
+    console.error('Unexpected error in fetchTeamRecruitingRankings:', err);
+    return [];
+  }
 }
 
+
 export const fetchGamePerformance = async (team, season) => {
-  return [];
+  const { data, error } = await supabase.rpc('fetch_single_game_performance', {
+    team_input: team,
+    season_input: season,
+  });
+
+  if (error) {
+    console.error('Error fetching single game performance:', error);
+    return [];
+  }
+
+  return data;
 };
+
 
 export const fetchPassLeaders = async () => {
-  return [];
+  const { data, error } = await supabase
+    .from("game_stats")
+    .select("team_name, season, total_passing_offense_score")
+    .gte("games_played", 6)
+    .order("total_passing_offense_score", { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error("Error fetching pass leaders:", error);
+    return [];
+  }
+
+  return data;
 };
 
+
 export const fetchRushLeaders = async () => {
-  return [];
+  const { data, error } = await supabase
+    .from("game_stats")
+    .select("team_name, season, total_rushing_offense_score")
+    .gte("games_played", 6)
+    .order("total_rushing_offense_score", { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error("Error fetching rush leaders:", error);
+    return [];
+  }
+
+  return data;
 };
 
 export const fetchExplosiveLeaders = async () => {
-  return [];
+  const { data, error } = await supabase
+    .from("game_stats")
+    .select("team_name, season, avg_explosiveness")
+    .gte("games_played", 6)
+    .order("avg_explosiveness", { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error("Error fetching explosiveness leaders:", error);
+    return [];
+  }
+
+  return data;
 };
 
 export const fetchPassDefenseLeaders = async () => {
-  return [];
+  const { data, error } = await supabase
+    .from("game_stats")
+    .select("team_name, season, total_passing_defense_score")
+    .gte("games_played", 6)
+    .order("total_passing_defense_score", { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error("Error fetching pass defense leaders:", error);
+    return [];
+  }
+
+  return data;
 };
 
 export const fetchRushDefenseLeaders = async () => {
-  return [];
+  const { data, error } = await supabase
+    .from("game_stats")
+    .select("team_name, season, total_rushing_defense_score")
+    .gte("games_played", 6)
+    .order("total_rushing_defense_score", { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error("Error fetching rush defense leaders:", error);
+    return [];
+  }
+
+  return data;
 };
 
 export const fetchContainmentLeaders = async () => {
-  return [];
+  const { data, error } = await supabase
+    .from("game_stats")
+    .select("team_name, season, avg_allowed_explosiveness")
+    .gte("games_played", 6)
+    .order("avg_allowed_explosiveness", { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error("Error fetching allowed explosiveness:", error);
+    return [];
+  }
+
+  return data;
 };
