@@ -99,6 +99,7 @@ useEffect(() => {
                                                 <th>Score</th>
                                             </tr>
                                         </thead>
+                                     </thead>
                                     <tbody>
                                       {category.data.map((team) => {
                                         console.log(`Checking ${category.title}:`, team[category.field], typeof team[category.field]);
