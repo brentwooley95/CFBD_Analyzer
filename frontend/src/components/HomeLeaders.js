@@ -90,7 +90,6 @@ useEffect(() => {
                             <div className="card-body">
                                 <h5 className="card-title text-center">{category.title}</h5>
                                 <table className="table table-bordered text-center">
-                                    <thead>
                                         <thead>
                                             <tr>
                                                 <th>Rank</th>
@@ -99,7 +98,6 @@ useEffect(() => {
                                                 <th>Score</th>
                                             </tr>
                                         </thead>
-                                     </thead>
                                     <tbody>
                                      {category.data.map((team, i) => (
                                             <tr key={team.team_id}>
