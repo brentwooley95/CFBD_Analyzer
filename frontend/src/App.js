@@ -34,9 +34,9 @@ const App = () => {
             <div className='navbar-nav ms-auto'>
               <Link className='nav-link text-white' to='/'>Home</Link>
               <Link className='nav-link text-white' to='/about/'>About</Link>
-              <Link className='nav-link text-white' to='/team/'>Team View</Link>
-              <Link className='nav-link text-white' to='/team-comparison/'>Compare Team Seasons</Link>
-              <Link className='nav-link text-white' to='/games/'>Game View</Link>
+              <Link className='nav-link text-white' to='/team/'>Historical View</Link>
+              <Link className='nav-link text-white' to='/team-comparison/'>Compare Teams</Link>
+              <Link className='nav-link text-white' to='/games/'>Games</Link>
             </div>
           </div>
         </div>
