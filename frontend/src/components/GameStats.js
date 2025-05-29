@@ -67,7 +67,7 @@ const GameStats = ({ gameStats, formData }) => {
                     <thead className="thead-dark">
                         <tr>
                             <th>{team1Stats.team_name} {team1Stats.season}</th>
-                            <th>Offense Metrics</th>
+                            <th></th>
                             <th>{team2Stats.team_name} {team2Stats.season}</th>
                         </tr>
                     </thead>
@@ -78,6 +78,10 @@ const GameStats = ({ gameStats, formData }) => {
                             <td>{team1Stats.games_played}</td>
                             <td className="fw-bold">FBS Games Played</td>
                             <td>{team2Stats.games_played}</td>
+                        </tr>
+
+                        <tr>
+                            <th colSpan="3" className="text-center fw-bold bg-light">Offense Metrics</th>
                         </tr>
 
                         {/* Offense Metrics */}
