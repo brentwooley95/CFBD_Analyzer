@@ -7,7 +7,7 @@ const About = () => {
       <p>
         This project aggregates game data and aims to be a quick reference for both the casual and seasoned college football fan.
         <br /><br />
-        This tool allows users to explore a dynamic database of game data from 2014 to present. Users can view and compare individual teams across several propietary metrics. The base data is sourced from <a href="https://collegefootballdata.com" target="_blank" rel="noopener noreferrer">collegefootballdata.com</a> and is dynamically updated to include the latest game data each week.
+        This tool allows users to explore a dynamic database of game data from 2014 to present. Users can view and compare individual teams across several propietary metrics. The base data is sourced from <a href="https://collegefootballdata.com" target="_blank" rel="noopener noreferrer">collegefootballdata.com</a> and is updated to include the latest game data each week.
       </p>
       <p>For reference on definitions of some of the metrics described below, please see <a href="https://collegefootballdata.com/glossary" target="_blank" rel="noopener noreferrer">their glossary</a>.</p>
 
