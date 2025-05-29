@@ -15,7 +15,7 @@ const GamePerformances = ({ gameData }) => {
                     <thead className="thead-dark">
                         <tr>
                             <th>Date</th>
-                            <th>Opponent</th>
+                            <th className="text-nowrap">Opponent</th>
                             <th>Opponent Tier</th>
                             <th>Game Type</th>
                             <th>Team Score</th>
@@ -44,25 +44,25 @@ const GamePerformances = ({ gameData }) => {
                                     {game.result}
                                 </td>
                                 <td className={getColorClass(game.total_passing_offense_score ?? 0)}>
-                                    {(game.total_passing_offense_score ?? 0).toFixed(0)}
+                                    {(game.total_passing_offense_score ?? 0).toFixed(2)}
                                 </td>
                                 <td className={getColorClass(game.total_rushing_offense_score ?? 0)}>
-                                    {(game.total_rushing_offense_score ?? 0).toFixed(0)}
+                                    {(game.total_rushing_offense_score ?? 0).toFixed(2)}
                                 </td>
                                 <td className={getColorClass(game.explosiveness ?? 0)}>
-                                    {(game.explosiveness ?? 0).toFixed(0)}
+                                    {(game.explosiveness ?? 0).toFixed(2)}
                                 </td>
                                 <td className={getColorClass(game.success_rate ?? 0, true)}>
                                     {((game.success_rate ?? 0) * 100).toFixed(1)}%
                                 </td>
                                 <td className={getColorClass(game.total_passing_defense_score ?? 0)}>
-                                    {(game.total_passing_defense_score ?? 0).toFixed(0)}
+                                    {(game.total_passing_defense_score ?? 0).toFixed(2)}
                                 </td>
                                 <td className={getColorClass(game.total_rushing_defense_score ?? 0)}>
-                                    {(game.total_rushing_defense_score ?? 0).toFixed(0)}
+                                    {(game.total_rushing_defense_score ?? 0).toFixed(2)}
                                 </td>
                                 <td className={getColorClass(game.allowed_explosiveness ?? 0)}>
-                                    {(game.allowed_explosiveness ?? 0).toFixed(0)}
+                                    {(game.allowed_explosiveness ?? 0).toFixed(2)}
                                 </td>
                                 <td className={getColorClass(game.allowed_success ?? 0, true, true)}>
                                     {((game.allowed_success ?? 0) * 100).toFixed(1)}%
