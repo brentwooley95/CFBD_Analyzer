@@ -91,17 +91,20 @@ useEffect(() => {
                                 <h5 className="card-title text-center">{category.title}</h5>
                                 <table className="table table-bordered text-center">
                                     <thead>
-                                        <tr>
-                                            <th>Team</th>
-                                            <th>Season</th>
-                                            <th>Score</th>
-                                        </tr>
-                                    </thead>
+                                        <thead>
+                                            <tr>
+                                                <th>Rank</th>
+                                                <th>Team</th>
+                                                <th>Season</th>
+                                                <th>Score</th>
+                                            </tr>
+                                        </thead>
                                     <tbody>
                                       {category.data.map((team) => {
                                         console.log(`Checking ${category.title}:`, team[category.field], typeof team[category.field]);
                                         return (
                                           <tr key={team.team_id}>
+                                            <td>{i + 1}</td>
                                             <td>{team.team_name}</td>
                                             <td>{team.season}</td>
                                             <td>{Number(team[category.field]).toFixed(2)}</td>
