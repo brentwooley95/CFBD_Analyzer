@@ -5,9 +5,9 @@ const About = () => {
     <div>
       <h2>CFB Matchup Tool</h2>
       <p>
-        This project aggregates game data and aims to be a quick reference for both the casual and seasoned college football fan.
+        This site aggregates game data and aims to be a quick reference for both the casual and seasoned college football fan.
         <br /><br />
-        This tool allows users to explore a dynamic database of game data from 2014 to present. Users can view and compare individual teams across several propietary metrics. The base data is sourced from <a href="https://collegefootballdata.com" target="_blank" rel="noopener noreferrer">collegefootballdata.com</a> and is updated to include the latest game data each week.
+        This tool allows users to explore a dynamic database of game data from 2014 to present. Users can view and compare individual teams across several metrics, many of which are unique to this site. The base data is sourced from <a href="https://collegefootballdata.com" target="_blank" rel="noopener noreferrer">collegefootballdata.com</a> and is updated to include the latest game data each week.
       </p>
       <p>For reference on definitions of some of the metrics described below, please see <a href="https://collegefootballdata.com/glossary" target="_blank" rel="noopener noreferrer">their glossary</a>.</p>
 
@@ -35,7 +35,7 @@ const About = () => {
       <ul>
         <li><strong>Offensive Passing Score:</strong> A value between 0 and 100 indicating the relative performance of a team's ability to pass the ball effectively. A normalized value based on the sum of passing PPA per game.</li>
         <li><strong>Offensive Rushing Score:</strong> Similar to the passing score but based on total PPA for rushing plays.</li>
-        <li><strong>Offensive Success Rate:</strong> The rate of a play being "successful" based on down and distance. See official definitions.</li>
+        <li><strong>Offensive Success Rate:</strong> The rate of a play being "successful" based on down and distance.</li>
         <li><strong>Offensive Explosiveness:</strong> Measures how "big" successful plays are on average.</li>
       </ul>
 
