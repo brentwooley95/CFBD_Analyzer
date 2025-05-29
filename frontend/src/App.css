@@ -27,6 +27,13 @@
 .App-link {
   color: #61dafb;
 }
+
+.table {
+  width: 100%;
+  min-width: 1200px; /* Or whatever baseline width you want */
+  table-layout: auto;
+}
+
 .stats-table, .record-table {
     width: 100%;
     border-collapse: collapse;
@@ -97,6 +104,19 @@ td {
     color: white !important;
     text-align: center;
 }
+
+.team1-section {
+  background-color: #ffeeb1;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.team2-section {
+  background-color: #b2e4ed;
+  border-radius: 8px;
+  padding: 10px;
+}
+
 
 
 
