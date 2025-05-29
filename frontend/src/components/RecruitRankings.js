@@ -18,7 +18,7 @@ const RecruitRankings = ({ recruitingData, formData }) => {
     return (
         <div className="card shadow-sm mb-4">
             <div className="card-body">
-                <h2 className="card-title text-center">Recruiting Rankings</h2>
+                <h2 className="card-title text-center">Recruiting</h2>
 
                 <table className="table table-striped table-bordered text-center">
                     <colgroup>
@@ -30,7 +30,7 @@ const RecruitRankings = ({ recruitingData, formData }) => {
                     <thead className="thead-dark">
                         <tr>
                             <th>{team1Recruiting.team_name} {team1Recruiting.season}</th>
-                            <th>Recruiting Metrics</th>
+                            <th></th>
                             <th>{team2Recruiting.team_name} {team2Recruiting.season}</th>
                         </tr>
                     </thead>
