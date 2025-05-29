@@ -1,4 +1,6 @@
 import React from 'react';
+import '../App.css';
+
 
 /* Dropdown component for Team comparison page, allows selection of two teams with two corresponding seasons. */
 const TeamComparisonDrop = ({ seasons, teams, formData, handleChange }) => {
@@ -9,7 +11,7 @@ const TeamComparisonDrop = ({ seasons, teams, formData, handleChange }) => {
 
                 <div className="row justify-content-center">
                     {/* Team 1 Selection */}
-                    <div className="col-md-5">
+                    <div className="col-md-5 team1-section">
                         <div className="mb-3">
                             <label className="fw-bold">Season 1</label>
                             <select name="season1" value={formData.season1} onChange={handleChange} className="form-select">
@@ -31,7 +33,7 @@ const TeamComparisonDrop = ({ seasons, teams, formData, handleChange }) => {
                     </div>
 
                     {/* Team 2 Selection */}
-                    <div className="col-md-5">
+                    <div className="col-md-5 team2-section">
                         <div className="mb-3">
                             <label className="fw-bold">Season 2</label>
                             <select name="season2" value={formData.season2} onChange={handleChange} className="form-select">
