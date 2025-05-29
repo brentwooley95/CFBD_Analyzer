@@ -101,17 +101,14 @@ useEffect(() => {
                                         </thead>
                                      </thead>
                                     <tbody>
-                                      {category.data.map((team) => {
-                                        console.log(`Checking ${category.title}:`, team[category.field], typeof team[category.field]);
-                                        return (
-                                          <tr key={team.team_id}>
-                                            <td>{i + 1}</td>
-                                            <td>{team.team_name}</td>
-                                            <td>{team.season}</td>
-                                            <td>{Number(team[category.field]).toFixed(2)}</td>
-                                          </tr>
-                                        );
-                                      })}
+                                     {category.data.map((team, i) => (
+                                            <tr key={team.team_id}>
+                                                <td>{i + 1}</td>
+                                                <td>{team.team_name}</td>
+                                                <td>{team.season}</td>
+                                                <td>{Number(team[category.field]).toFixed(0)}</td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
