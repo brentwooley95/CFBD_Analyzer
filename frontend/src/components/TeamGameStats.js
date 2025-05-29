@@ -93,8 +93,8 @@ const TeamGameStats = ({ gameStats }) => {
             x: { title: { display: true, text: 'Season' } },
             y: {
                 title: { display: true, text: 'Score' },
-                min: -10,   // Set minimum Y value
-                max: 115,   // Set maximum Y value
+                min: 0,   // Set minimum Y value
+                max: 100,   // Set maximum Y value
                 ticks: {
                     stepSize: 10 // expand
                 }
