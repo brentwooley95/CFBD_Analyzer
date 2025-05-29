@@ -27,7 +27,7 @@ const About = () => {
         Passing and rushing scores are calculated based on the total predicted points added (PPA or EPA) metric for valid plays in each game. Total PPA in a given game is weighted against the tier of the opponent, so more PPA against tougher/higher-tiered opponents results in a higher overall score and vice-versa.
        </p>
        <p>
-        <strong>What is PPA/EPA?</strong> Essentially EPA (PPA is cfbd.com's slightly altered version of the same thing) applies a point value to every play based on the positioning on the field and situation. For more information you can visit <a href="https://www.the33rdteam.com/epa-explained/" target="_blank" rel="noopener noreferrer">EPA explained - the33rdteam.comm</a>.
+        <strong>What is PPA/EPA?</strong> Essentially EPA (PPA is cfbd.com's slightly altered version of the same thing) applies a point value to every play based on the positioning on the field and situation. For more information you can visit <a href="https://www.the33rdteam.com/epa-explained/" target="_blank" rel="noopener noreferrer">EPA explained - the33rdteam.com</a>.
        </p>
 
 
