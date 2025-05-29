@@ -5,9 +5,9 @@ const About = () => {
     <div>
       <h2>CFB Matchup Tool</h2>
       <p>
-        This project focuses on aggregating and visualizing data and aims to be a resource for football and statistic fans alike.
+        This project aggregates game data and aims to be a quick reference for both the casual and seasoned college football fan.
         <br /><br />
-        This tool is a web application designed to allow users to explore a database of college football game data over the past 10 years. Users can view and compare individual teams across several metrics and apply filters to view game results and metrics for a particular season or aggregates of a season or seasons. The dataset is sourced from <a href="https://collegefootballdata.com" target="_blank" rel="noopener noreferrer">collegefootballdata.com</a> and is dynamically updated to include the latest game data each week.
+        This tool allows users to explore a dynamic database of game data from 2014 to present. Users can view and compare individual teams across several propietary metrics. The base data is sourced from <a href="https://collegefootballdata.com" target="_blank" rel="noopener noreferrer">collegefootballdata.com</a> and is dynamically updated to include the latest game data each week.
       </p>
       <p>For reference on definitions of some of the metrics described below, please see <a href="https://collegefootballdata.com/glossary" target="_blank" rel="noopener noreferrer">their glossary</a>.</p>
 
@@ -15,7 +15,7 @@ const About = () => {
 
       <h3>Data Constraints</h3>
       <p>
-        This dataset covers games from <strong>2014 to the present</strong> and has some constraints to maintain consistency and accuracy:
+        This data covers games from <strong>2014 to the present</strong> and there are some important constraints to maintain consistency and accuracy:
       </p>
       <ul>
         <li><strong>Excludes garbage time plays.</strong> Thanks to an option provided by the data source, ensuring metrics reflect meaningful game situations.</li>
@@ -24,11 +24,16 @@ const About = () => {
 
       <h3>Key Metric Definitions</h3>
        <p>
-        Passing and rushing scores are calculated based on the total predicted points added (PPA or EPA) metric for valid plays (see constraints) in each game. Total PPA in a given game is weighted against the tier of the opponent, so more PPA against tougher/higher-tiered opponents results in a higher overall score and vice-versa.
+        Passing and rushing scores are calculated based on the total predicted points added (PPA or EPA) metric for valid plays in each game. Total PPA in a given game is weighted against the tier of the opponent, so more PPA against tougher/higher-tiered opponents results in a higher overall score and vice-versa.
        </p>
+       <p>
+        <strong>What is PPA/EPA?</strong> Essentially EPA (PPA is cfbd.com's slightly altered version of the same thing) applies a point value to every play based on the positioning on the field and situation. For more information you can visit <a href="https://www.the33rdteam.com/epa-explained/" target="_blank" rel="noopener noreferrer">EPA explained - the33rdteam.comm</a>.
+       </p>
+
+
       <h4>Offensive Metrics</h4>
       <ul>
-        <li><strong>Offensive Passing Score:</strong> A value between 0 and 100 indicating the relative performance of a team's ability to pass the ball effectively.</li>
+        <li><strong>Offensive Passing Score:</strong> A value between 0 and 100 indicating the relative performance of a team's ability to pass the ball effectively. A normalized value based on the sum of passing PPA per game.</li>
         <li><strong>Offensive Rushing Score:</strong> Similar to the passing score but based on total PPA for rushing plays.</li>
         <li><strong>Offensive Success Rate:</strong> The rate of a play being "successful" based on down and distance. See official definitions.</li>
         <li><strong>Offensive Explosiveness:</strong> Measures how "big" successful plays are on average.</li>
